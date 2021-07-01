@@ -6,7 +6,10 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "test": "jest search"
+    "test": "jest",
+    "test-url": "jest url",
+    "test-select": "jest select",
+    "test-search": "jest search"
   },
   "dependencies": {
     "core-js": "^3.6.5",

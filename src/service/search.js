@@ -1,15 +1,57 @@
 import db from "../asset/db.json";
 
 //function viewResultUrl()
+let depths = [];
+const _selectedCount = {};
 
-function isResult(item, key) {
+function setSelectedCount(id) {
+  //console.log('set _selectedCount', _selectedCount)
+  if (Object.prototype.hasOwnProperty.call(_selectedCount, id)) {
+    const thisCount = _selectedCount[id];
+    _selectedCount[id] = thisCount + 1;
+  } else {
+    _selectedCount[id] = 1;
+  }
+}
+
+function initSelectedCount() {
+  for (var variableKey in _selectedCount) {
+    if (Object.prototype.hasOwnProperty.call(_selectedCount, variableKey)) {
+      delete _selectedCount[variableKey];
+    }
+  }
+}
+
+function getSelectedCount(id) {
+  //console.log('get _selectedCount', _selectedCount)
+  if (!Object.prototype.hasOwnProperty.call(_selectedCount, id)) {
+    return 0;
+  }
+  return _selectedCount[id];
+}
+
+function isResult(item, key, isRoot = false) {
   key = key.toLowerCase();
   const fields = ["name", "category", "content", "tags"];
-  const depths=[];
+  if (isRoot) {
+    depths = [];
+  }
+  //
   // console.log(key, key.length);
 
-  function makeUrl(objKey){
-    return `${item.id}.${depths.join('.')}.${objKey}.${key}`;
+  function makeUrl(propertyName) {
+    //console.log('makeurl', isRoot)
+    // console.log("make url search", propertyName, depths, key, isRoot);
+    if (!isRoot) {
+      return propertyName;
+    }
+    if (depths.length < 1) {
+      return `${item.id}.${propertyName}.${key}`;
+    }
+    //related 의 경우에는 array type의 properties 가 숫자이므로 제거함
+    const viewDepths = depths.filter((item) => isNaN(item));
+    //const viewDepths = depths;
+    return `${item.id}.${viewDepths.join(".")}.${propertyName}.${key}`;
   }
 
   // search pre condition
@@ -46,7 +88,7 @@ function isResult(item, key) {
   //기 검색된 것 외에 내포된 경우
   for (const objKey of entryKeys) {
     const value = item[objKey];
-
+    // console.log('objKey', objKey, key, typeof item)
     //name, content, category 검색
     if (
       fields.indexOf(objKey) > -1 &&
@@ -66,15 +108,21 @@ function isResult(item, key) {
         return it.toLowerCase().indexOf(key) > -1;
       }) > -1
     ) {
+      //console.log('tags search', objKey, depths, key,isRoot);
       return makeUrl(objKey);
     }
 
     // nest object searching
     if (fields.indexOf(objKey) < 0 && typeof value === "object") {
-      // console.log("call recusive ", objKey, key, item.id);
-      if (isResult(value, key)) {
-        depths.push(objKey);
-        return makeUrl(objKey);
+      // console.log("call recusive ", objKey, key, value, depths, depths[depths.length-1]);
+      //const lastDepthItem = depths[depths.length-1];
+      depths.push(objKey);
+      const searchedField = isResult(value, key);
+      if (searchedField) {
+        //console.log('recursive search', searchedField, depths, key, isRoot);
+        return makeUrl(searchedField);
+      } else {
+        depths.splice(-1, 1);
       }
     }
   }
@@ -87,18 +135,26 @@ function isResult(item, key) {
 export default {
   filter(key) {
     const items = db;
-    const result = items.filter((item) => {
-      return isResult(item, key);
-    }).map((it)=>{
-      const searchUrl = isResult(it, key);
-      console.log('searchUrl', searchUrl);
-      return {
-        id:it.id, 
-        view: `${it.id}.${it.name}.${it.category}`,
-        url: searchUrl,
-      }
-    });
+    const result = items
+      .filter((item) => {
+        //depths = [];
+        return isResult(item, key, true);
+      })
+      .map((it) => {
+        //depths = [];
+        const searchUrl = isResult(it, key, true);
+        // console.log('searchUrl', searchUrl);
+        return {
+          id: it.id,
+          view: `${it.id}.${it.name}.${it.category}`,
+          url: searchUrl,
+          count: getSelectedCount(it.id),
+        };
+      });
     return result;
   },
   isResult,
+  setSelectedCount,
+  getSelectedCount,
+  initSelectedCount
 };
