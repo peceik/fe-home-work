@@ -1,19 +1,40 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <!-- <search-work msg="insert search keyword"/> -->
+    <h1>insert search keyword</h1>
+    <SearchAutocomplete />
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+// import HelloWorld from './components/HelloWorld.vue'
+// import SearchWork from './components/SearchWork.vue'
+import SearchAutocomplete from "./components/SearchAutocomplete.vue";
+
+const tempItems = [
+  "Apple",
+  "Banana",
+  "Orange",
+  "Mango",
+  "Pear",
+  "Peach",
+  "Grape",
+  "Tangerine",
+  "Pineapple",
+  "ttt",
+];
 
 export default {
-  name: 'App',
+  name: "App",
   components: {
-    HelloWorld
-  }
-}
+    SearchAutocomplete,
+  },
+  data() {
+    return {
+      temps: tempItems,
+    };
+  },
+};
 </script>
 
 <style>
