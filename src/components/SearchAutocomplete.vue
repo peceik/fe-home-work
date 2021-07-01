@@ -22,11 +22,11 @@
         v-else
         v-for="(result, i) in results"
         :key="i"
-        @click="setResult(result)"
+        @click="setResult(result.url)"
         class="autocomplete-result"
         :class="{ 'is-active': i === arrowCounter }"
       >
-        {{ result }}
+        {{ result.view }}
       </li>
     </ul>
   </div>
@@ -62,6 +62,7 @@ export default {
   },
   methods: {
     setResult(result) {
+        console.log('setResult', result)
       this.search = result;
       this.isOpen = false;
     },
@@ -71,9 +72,7 @@ export default {
       //   return item.toLowerCase().indexOf(this.search.toLowerCase()) > -1;
       // });
       const searchKey = this.search;
-      this.results = search.filter(searchKey).map((it) => {
-        return `${it.id}.${it.name}.${it.category}`;
-      });
+      this.results = search.filter(searchKey);
     },
     isResult(item, key) {
       key = key.toLowerCase();
@@ -147,7 +146,7 @@ export default {
       }
     },
     onEnter() {
-      this.search = this.results[this.arrowCounter];
+      this.search = this.results[this.arrowCounter].url;
       this.isOpen = false;
       this.arrowCounter = -1;
     },

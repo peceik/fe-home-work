@@ -1,9 +1,16 @@
 import db from "../asset/db.json";
 
+//function viewResultUrl()
+
 function isResult(item, key) {
   key = key.toLowerCase();
   const fields = ["name", "category", "content", "tags"];
+  const depths=[];
   // console.log(key, key.length);
+
+  function makeUrl(objKey){
+    return `${item.id}.${depths.join('.')}.${objKey}.${key}`;
+  }
 
   // search pre condition
   if (key.length < 2) {
@@ -47,7 +54,7 @@ function isResult(item, key) {
       objKey !== "tags" &&
       item[objKey].toLowerCase().indexOf(key) > -1
     ) {
-      return objKey;
+      return makeUrl(objKey);
     }
 
     //tag 검색
@@ -59,14 +66,15 @@ function isResult(item, key) {
         return it.toLowerCase().indexOf(key) > -1;
       }) > -1
     ) {
-      return objKey;
+      return makeUrl(objKey);
     }
 
     // nest object searching
     if (fields.indexOf(objKey) < 0 && typeof value === "object") {
       // console.log("call recusive ", objKey, key, item.id);
       if (isResult(value, key)) {
-        return objKey;
+        depths.push(objKey);
+        return makeUrl(objKey);
       }
     }
   }
@@ -81,7 +89,16 @@ export default {
     const items = db;
     const result = items.filter((item) => {
       return isResult(item, key);
+    }).map((it)=>{
+      const searchUrl = isResult(it, key);
+      console.log('searchUrl', searchUrl);
+      return {
+        id:it.id, 
+        view: `${it.id}.${it.name}.${it.category}`,
+        url: searchUrl,
+      }
     });
     return result;
   },
+  isResult,
 };
