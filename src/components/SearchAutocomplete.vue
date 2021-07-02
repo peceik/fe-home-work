@@ -15,11 +15,7 @@
       class="autocomplete-results"
       ref="autocompleteResults"
     >
-      <li class="loading" v-if="isLoading">
-        Loading results...
-      </li>
       <li
-        v-else
         v-for="(result, i) in results"
         :key="i"
         @click="setResult(result)"
@@ -109,16 +105,16 @@ export default {
       if (this.scrollLocation > 32) {
         this.scrollLocation = this.arrowCounter * 33;
       }
-      console.log('location', this.scrollLocation);
-      console.log('arrowCounter', this.arrowCounter);
+      //console.log('location', this.scrollLocation);
+      //console.log('arrowCounter', this.arrowCounter);
       this.$refs.autocompleteResults.scrollTop = this.scrollLocation;
     },
     downScroll() {
       if (this.scrollLocation < 70) {
         this.scrollLocation = this.arrowCounter * 33;
       }
-      console.log('location', this.scrollLocation);
-      console.log('arrowCounter', this.arrowCounter);
+      //console.log('location', this.scrollLocation);
+      //console.log('arrowCounter', this.arrowCounter);
       this.$refs.autocompleteResults.scrollTop = this.scrollLocation;
     },
   },
