@@ -23,6 +23,7 @@ yarn serve
 yarn test-search
 ```
 
+
 ### Test url
 - 검색어로 검색이 되고 난 후 결과에 따라서 보여주는 url 을 테스트 합니다.
 - .src/test/search.url.js 파일이 실행됩니다.
@@ -71,6 +72,22 @@ yarn test
 
 # 개선해야 하는 부분 
    - 검색을 하고 여러 건의 결과가 있을 때 아래화살표 키보드를 눌렀을 때 첫번째 결과가 선택되어야 하는데 두 번째 결과가 선택되는 현상이 있습니다. keydown.down 이 이벤트가 2번 발생하여 나타나는 현상인데 해결하지 못 했으나 기능에는 문제가 없고 높은 우선수위는 아닌 것 같아서 그대로 두었습니다.  
+   이 부분은 windows에서 테스트해보니 잘 동작합니다.
    - autocomplete 원래 소스 기능에는 비동기 검색도 지원하도록 코드가 만들어져 있으나 이 부분은 사용하지 않는데 아직 소스코드에는 남아 있습니다. 
+   - Test code 를 만들 때 db.json 을 보면서 즉흥적으로 테스트 케이스를 구성하였는데 데이터를 보고 구조에 따른 케이스별로 분류하여 만들었다면 좀 더 체계적이고 틈이 없는 Test code 가 나왔을 것이라 생각합니다. 
+
+# 코딩하면서 배운 점 
+```   
+Do not access Object.prototype method 'hasOwnProperty' from target object.eslintno-prototype-builtins
+```
+  - hasOwnProperty 라는 메소드를 사용했을 때 eslint 에서 위의 메시지를 보여주면서 에러 메시지를 보여줬는데 이유는 2가지 입니다.    
+     1. Object.create(null) 메소드로 객체를 생성하면 Object.prototype을 상속받지 않습니다. 
+     2. 객체에 같은 이름의 키가 있다면 동작하지 않을 수 있습니다.    
+  
+     위의 2가지 이유로 eslint는 hasOwnProperty 라는 메소드의 직접 호출을 제한합니다. 
+   
+
+
+
 
 
